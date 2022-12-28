@@ -3,7 +3,7 @@
 'use strict';
 /**
  * 
- * @param {'kendoGrid'|'kendoDropDownList'|'kendoComboBox'|'kendoWindow'} component 
+ * @param {'kendoGrid'|'kendoDropDownList'|'kendoComboBox'|'kendoWindow'|'kendoTabStrip'} component 
  * @returns 
  */
 let newKendoOpt = (component, extendsOpt) => {
@@ -30,7 +30,6 @@ let newKendoOpt = (component, extendsOpt) => {
                 filterable: true,
                 groupable: true,
                 group: function (e) { //Kendo UI 2016 R3 (2016.3.914) release. 現在沒用
-                    console.log(e)
                     let grid = e.sender
                     grid.columns.map(c => grid.showColumn(c.field))
                     e.groups.map(c => grid.hideColumn(c.field))
@@ -75,6 +74,15 @@ let newKendoOpt = (component, extendsOpt) => {
                 modal: true,
             }
             break;
+        case 'kendoTabStrip':
+            opt = {
+                animation: {
+                    open: {
+                        effects: "fadeIn"
+                    }
+                }
+            }
+            break;
     }
     Object.assign(opt, extendsOpt)
     return opt
@@ -104,7 +112,7 @@ let newComponentDOM = (component) => {
 
 /**
  * 
- * @param {'kendoGrid'|'kendoDropDownList'|'kendoComboBox'|'kendoWindow'} component 
+ * @param {'kendoGrid'|'kendoDropDownList'|'kendoComboBox'|'kendoWindow'|'kendoTabStrip'} component 
  * @returns 
  */
 let initKendoComponent = (component, DOMSelector, opt) => {
@@ -136,6 +144,9 @@ let initKendoComponent = (component, DOMSelector, opt) => {
         case 'kendoWindow':
             obj = DOMSelector.kendoWindow(!opt ? {} : opt).data(component)
             break;
+        case 'kendoTabStrip':
+            obj = DOMSelector.kendoTabStrip(!opt ? {} : opt).data(component)
+            break;
     }
     return obj
 }
@@ -143,17 +154,18 @@ let initKendoComponent = (component, DOMSelector, opt) => {
 class JKendoBase {
     /**
      * 
-     * @param {'kendoGrid'|'kendoComboBox'|'kendoDropDownList'|'kendoWindow'|'button'|'textbox'} component 
+     * @param {'kendoGrid'|'kendoComboBox'|'kendoDropDownList'|'kendoWindow'|'button'|'textbox'|'kendoTabStrip'} component 
      */
     constructor(component) {
         this.component = component
         this.DOM = newComponentDOM(component)
         this.opt = newKendoOpt(component)
         this.obj = this.DOM
+        this.id = parseInt(Math.random() * Math.pow(10, 10)).toString()
     }
     init(customizeOpt) {
-        customizeOpt = customizeOpt == null ? this.opt : customizeOpt
-        this.obj = initKendoComponent(this.component, this.DOM, customizeOpt)
+        this.opt = customizeOpt = customizeOpt == null ? this.opt : customizeOpt
+        this.obj = initKendoComponent(this.component, this.DOM, this.opt)
     }
     getHTML() {
         return this.obj[0].outerHTML
@@ -193,5 +205,50 @@ class JKendoDropDownList extends JKendoBase {
 class JKendoButton extends JKendoBase {
     constructor() {
         super('button')
+    }
+}
+
+class JKendoTab extends JKendoBase {
+
+    constructor() {
+        super('kendoTabStrip')
+    }
+    /**
+     * 
+     * @param {[[String], [Object]]} tabContents 
+     */
+    set(tabContents) {
+        this.setTabs(tabContents[0])
+        this.setContents(tabContents[1])
+    }
+    /**
+     * 
+     * @param {[String]} tabs 
+     */
+    setTabs(tabs) {
+        this.DOM.html(
+            $('<ul>').html(
+                tabs.map((m, idx) => $('<li>').attr('id', this.id + idx).html(m)[0].outerHTML).join('')
+            )
+        ).append(tabs.map(m => $('<div>')[0].outerHTML).join(''))
+        this.tabs = tabs
+        this.tabContents = tabs.map(m => '')
+    }
+
+    setContents(contents) {
+        this.tabContents = contents
+    }
+
+    setContent(tab, content) {
+        this.tabContents[this.tabs.indexOf(tab)] = content
+    }
+
+    init(customizeOpt) {
+        super.init(customizeOpt)
+
+        this.tabs.map((m, idx) => {
+            this.DOM.find('div#' + this.DOM.find('ul li#' + this.id + idx).attr('aria-controls')).html(this.tabContents[idx])
+        })
+        this.obj.activateTab(this.DOM.find('ul li#' + this.id + 0))
     }
 }
