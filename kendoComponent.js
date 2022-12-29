@@ -1,6 +1,9 @@
+'use strict';
 /// <reference path="https://kendo.cdn.telerik.com/2022.3.1109/js/kendo.all.min.js" />
 /// <reference path="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js" />
-'use strict';
+
+import { defaultGridConfig, defaultFirstCol } from "./defaultConfig"
+
 /**
  * 
  * @param {'kendoGrid'|'kendoDropDownList'|'kendoComboBox'|'kendoWindow'|'kendoTabStrip'} component 
@@ -11,31 +14,32 @@ let newKendoOpt = (component, extendsOpt) => {
     let opt = {}
     switch (component) {
         case 'kendoGrid':
-            opt = {
-                dataSource: {
-                    type: "json",
-                    transport: {
-                        read: ''
-                    },
-                    pageSize: 5,
-                },
-                editable: true,
-                sortable: true,
-                pageable: {
-                    refresh: true,
-                    pageSizes: true,
-                    buttonCount: 5,
-                },
-                columns: [],
-                filterable: true,
-                groupable: true,
-                group: function (e) { //Kendo UI 2016 R3 (2016.3.914) release. 現在沒用
-                    let grid = e.sender
-                    grid.columns.map(c => grid.showColumn(c.field))
-                    e.groups.map(c => grid.hideColumn(c.field))
-                },
-                selectable: true,
-            }
+            // opt = {
+            //     dataSource: {
+            //         type: "json",
+            //         transport: {
+            //             read: ''
+            //         },
+            //         pageSize: 5,
+            //     },
+            //     editable: true,
+            //     sortable: true,
+            //     pageable: {
+            //         refresh: true,
+            //         pageSizes: true,
+            //         buttonCount: 5,
+            //     },
+            //     columns: [],
+            //     filterable: true,
+            //     groupable: true,
+            //     group: function (e) { //Kendo UI 2016 R3 (2016.3.914) release. 現在沒用
+            //         let grid = e.sender
+            //         grid.columns.map(c => grid.showColumn(c.field))
+            //         e.groups.map(c => grid.hideColumn(c.field))
+            //     },
+            //     selectable: true,
+            // }
+            opt = { ...defaultGridConfig }
             break;
         case "kendoDropDownList":
             opt = {
@@ -113,6 +117,8 @@ let newComponentDOM = (component) => {
 /**
  * 
  * @param {'kendoGrid'|'kendoDropDownList'|'kendoComboBox'|'kendoWindow'|'kendoTabStrip'} component 
+ * @param {jQuery} DOMSelector
+ * @param {JSON} opt
  * @returns 
  */
 let initKendoComponent = (component, DOMSelector, opt) => {
@@ -163,12 +169,75 @@ class JKendoBase {
         this.obj = this.DOM
         this.id = parseInt(Math.random() * Math.pow(10, 10)).toString()
     }
+    /**
+     * @param {JSON} customizeOpt
+     */
     init(customizeOpt) {
         this.opt = customizeOpt = customizeOpt == null ? this.opt : customizeOpt
         this.obj = initKendoComponent(this.component, this.DOM, this.opt)
     }
     getHTML() {
         return this.obj[0].outerHTML
+    }
+    /**
+     * @param {String} value
+     */
+    set val(value) {
+        switch (this.component) {
+            case 'textbox':
+                this.obj.val(value)
+                break;
+            case 'kendoComboBox':
+            case 'kendoDropDownList':
+                this.obj.value(value)
+                break;
+        }
+        this.obj.value(value)
+    }
+    get val() {
+        let val = ''
+        switch (this.component) {
+            case 'textbox':
+                val = this.obj.val()
+                break;
+            case 'kendoComboBox':
+            case 'kendoDropDownList':
+                val = this.obj.value()
+                break;
+        }
+        return val
+    }
+    /**
+     * @param {String} url
+     */
+    set url(url) {
+        switch (this.component) {
+            case 'kendoComboBox':
+            case 'kendoDropDownList':
+            case 'kendoGrid':
+                this.opt.dataSource.transport.read = url
+                break;
+        }
+    }
+    /**
+     * @param {[JSON]} data
+     */
+    set data(data) {
+        switch (this.component) {
+            case 'kendoComboBox':
+            case 'kendoDropDownList':
+            case 'kendoGrid':
+                delete this.opt.dataSource.transport
+                this.opt.dataSource.data = data
+                break;
+        }
+    }
+    get data() {
+        switch (this.component) {
+            case 'kendoGrid':
+                return this.obj.dataSource.data()
+                break;
+        }
     }
 }
 
