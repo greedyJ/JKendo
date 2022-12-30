@@ -1,5 +1,5 @@
 //https://docs.telerik.com/kendo-ui/api/javascript/ui/grid/configuration/columns.command
-let defaultFirstCol = { command: 'destroy', width: "50px" }
+let defaultGridFirstCol = { command: 'destroy', width: "50px" }
 let defaultGridConfig = {
     dataSource: {
         type: "json",
@@ -18,9 +18,10 @@ let defaultGridConfig = {
     columns: [],
     filterable: true,
     groupable: true,
+    // https://docs.telerik.com/kendo-ui/api/javascript/ui/grid/configuration/toolbar
     toolbar: [
         "create"
-    ],// https://docs.telerik.com/kendo-ui/api/javascript/ui/grid/configuration/toolbar
+    ],
     group: function (e) { //Kendo UI 2016 R3 (2016.3.914) release. 現在沒用
         let grid = e.sender
         grid.columns.map(c => grid.showColumn(c.field))
