@@ -1,3 +1,4 @@
+//https://docs.telerik.com/kendo-ui/api/javascript/ui/grid/configuration/columns.command
 let defaultFirstCol = { command: 'destroy', width: "50px" }
 let defaultGridConfig = {
     dataSource: {
