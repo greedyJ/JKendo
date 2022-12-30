@@ -34,6 +34,3 @@ let defaultGridConfig = {
     },
     selectable: true,
 }
-
-
-export { defaultGridConfig, defaultFirstCol }
