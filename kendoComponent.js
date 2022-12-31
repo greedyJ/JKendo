@@ -1,6 +1,7 @@
 'use strict';
 /// <reference path="https://kendo.cdn.telerik.com/2022.3.1109/js/kendo.all.min.js" />
 /// <reference path="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js" />
+/// <reference path="configs/grid/defaultGridConfig.js" />
 
 /**
  * 
@@ -231,17 +232,59 @@ class JKendoBase {
         }
     }
     get data() {
+        let data = []
         switch (this.component) {
             case 'kendoGrid':
-                return this.obj.dataSource.data()
+                data = this.obj.dataSource.data()
                 break;
         }
+        return data
     }
 }
 
 class JKendoGrid extends JKendoBase {
     constructor() {
         super('kendoGrid')
+    }
+    /**
+     * @param {[{field:String,title:String}]} cols
+     */
+    set columns(cols) {
+        this.opt.columns = cols
+    }
+    /**
+     * @param {[{field:String}]} cols
+     */
+    set distinctColumns(cols) {
+        this._distinctColumns = cols
+        this.opt.dataSource.change = function (e) {
+            switch (e.action) {
+                case 'add':
+                case 'itemchange':
+                    let _oriData = e.sender.data()
+                    let _newDatas = _oriData
+                        .filter((value, index, self) => {
+                            return self
+                                .map(m => cols.map(mm => m[mm.field]).join('^@^'))
+                                .indexOf(cols.map(mm => value[mm.field]).join('^@^')) === index
+                        })
+                    if (_newDatas.length != _oriData.length) {
+                        let _diffDatas = _oriData
+                            .filter(f => !_newDatas.includes(f))
+
+                        let _diffMsgScope = _diffDatas.filter(f => !(cols.map(mm => f[mm.field] == null).reduce((a, b) => a && b)))
+                        if (_diffMsgScope.length > 0) {
+                            let msg = _diffMsgScope.map(m => cols.map(mm => mm.field + ':' + m[mm.field]).join(',')).join('\n')
+                            alert('Duplicate ' + msg)
+                        }
+
+                        _diffDatas.map(m => {
+                            e.sender.remove(m)
+                        })
+                    }
+                    break;
+            }
+        }
     }
 }
 
