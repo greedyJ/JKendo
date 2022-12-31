@@ -272,7 +272,7 @@ class JKendoGrid extends JKendoBase {
                         let _diffDatas = _oriData
                             .filter(f => !_newDatas.includes(f))
 
-                        let _diffMsgScope = _diffDatas.filter(f => !(cols.map(mm => f[mm.field] == null).reduce((a, b) => a && b)))
+                        let _diffMsgScope = _diffDatas.filter(f => !(cols.map(mm => f[mm.field] == null).reduce((a, b) => a && b))) // remove empty row
                         if (_diffMsgScope.length > 0) {
                             let msg = _diffMsgScope.map(m => cols.map(mm => mm.field + ':' + m[mm.field]).join(',')).join('\n')
                             alert('Duplicate ' + msg)
