@@ -8,7 +8,7 @@ let defaultGridConfig = {
         },
         pageSize: 10,
     },
-    editable: true,
+    editable: false,
     sortable: true,
     pageable: {
         refresh: true,
@@ -17,11 +17,9 @@ let defaultGridConfig = {
     },
     columns: [],
     filterable: true,
-    groupable: true,
+    groupable: false,
     // https://docs.telerik.com/kendo-ui/api/javascript/ui/grid/configuration/toolbar
-    toolbar: [
-        "create"
-    ],
+    toolbar: [],
     group: function (e) { //Kendo UI 2016 R3 (2016.3.914) release. 現在沒用
         let grid = e.sender
         grid.columns.map(c => grid.showColumn(c.field))

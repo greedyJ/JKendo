@@ -13,31 +13,6 @@ let newKendoOpt = (component, extendsOpt) => {
     let opt = {}
     switch (component) {
         case 'kendoGrid':
-            // opt = {
-            //     dataSource: {
-            //         type: "json",
-            //         transport: {
-            //             read: ''
-            //         },
-            //         pageSize: 5,
-            //     },
-            //     editable: true,
-            //     sortable: true,
-            //     pageable: {
-            //         refresh: true,
-            //         pageSizes: true,
-            //         buttonCount: 5,
-            //     },
-            //     columns: [],
-            //     filterable: true,
-            //     groupable: true,
-            //     group: function (e) { //Kendo UI 2016 R3 (2016.3.914) release. 現在沒用
-            //         let grid = e.sender
-            //         grid.columns.map(c => grid.showColumn(c.field))
-            //         e.groups.map(c => grid.hideColumn(c.field))
-            //     },
-            //     selectable: true,
-            // }
             opt = { ...defaultGridConfig }
             break;
         case "kendoDropDownList":
@@ -285,6 +260,36 @@ class JKendoGrid extends JKendoBase {
                     break;
             }
         }
+    }
+    /**
+     * @param {[('cancel'|'create'|'save'|'excel'|'pdf')]} btns
+     */
+    set toolbar(btns) {
+        if (!btns.length)
+            delete this.opt.toolbar
+        else
+            this.opt.toolbar = btns
+        if (btns.includes('save'))
+            console.log('Please Set saveChanges property')
+    }
+    /**
+     * @param {Boolean} show
+     */
+    set showGroupHeader(show = true) {
+        this.opt.groupable = show
+    }
+    /**
+     * @param {Boolean} editable
+     */
+    set editable(editable = true) {
+        this.opt.editable = editable
+    }
+    /**
+     * 
+     */
+    set saveChanges(callback) {
+        if (this.opt.toolbar.includes('save'))
+            this.opt.saveChanges = callback
     }
 }
 
