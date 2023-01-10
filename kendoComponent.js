@@ -367,3 +367,9 @@ class JKendoTab extends JKendoBase {
         this.obj.activateTab(this.DOM.find('ul li#' + this.id + 0))
     }
 }
+
+class JKendoTreeList extends JKendoBase {
+    constructor() {
+        super('kendoTreeList')
+    }
+}
