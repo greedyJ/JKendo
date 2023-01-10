@@ -244,6 +244,12 @@ class JKendoGridKind extends JKendoBase {
         super(component)
     }
     /**
+     * @param {[{field:String,title:String}]} cols
+     */
+    set columns(cols) {
+        this.opt.columns = cols
+    }
+    /**
      * @param {[('cancel'|'create'|'save'|'excel'|'pdf')]} btns
      */
     set toolbar(btns) {
@@ -273,12 +279,7 @@ class JKendoGrid extends JKendoGridKind {
     constructor() {
         super('kendoGrid')
     }
-    /**
-     * @param {[{field:String,title:String}]} cols
-     */
-    set columns(cols) {
-        this.opt.columns = cols
-    }
+
     /**
      * @param {[{field:String}]} cols
      */
