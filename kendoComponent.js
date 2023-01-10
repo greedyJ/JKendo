@@ -2,10 +2,11 @@
 /// <reference path="https://kendo.cdn.telerik.com/2022.3.1109/js/kendo.all.min.js" />
 /// <reference path="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js" />
 /// <reference path="configs/grid/defaultGridConfig.js" />
+/// <reference path="configs/treeList/defaultTreeListConfig.js" />
 
 /**
  * 
- * @param {'kendoGrid'|'kendoDropDownList'|'kendoComboBox'|'kendoWindow'|'kendoTabStrip'} component 
+ * @param {'kendoGrid'|'kendoTreeList'|'kendoDropDownList'|'kendoComboBox'|'kendoWindow'|'kendoTabStrip'} component 
  * @returns 
  */
 let newKendoOpt = (component, extendsOpt) => {
@@ -14,6 +15,9 @@ let newKendoOpt = (component, extendsOpt) => {
     switch (component) {
         case 'kendoGrid':
             opt = { ...defaultGridConfig }
+            break;
+        case 'kendoTreeList':
+            opt = { ...defaultTreeListConfig }
             break;
         case "kendoDropDownList":
             opt = {
@@ -90,7 +94,7 @@ let newComponentDOM = (component) => {
 
 /**
  * 
- * @param {'kendoGrid'|'kendoDropDownList'|'kendoComboBox'|'kendoWindow'|'kendoTabStrip'} component 
+ * @param {'kendoGrid'|'kendoTreeList'|'kendoDropDownList'|'kendoComboBox'|'kendoWindow'|'kendoTabStrip'} component 
  * @param {jQuery} DOMSelector
  * @param {JSON} opt
  * @returns 
@@ -107,7 +111,7 @@ let initKendoComponent = (component, DOMSelector, opt) => {
                     return m
                 })
             }
-            obj = DOMSelector.kendoGrid(!opt ? {} : opt).data(component)
+            obj = DOMSelector.kendoGrid(opt).data(component)
 
             // group hide column event
             obj.dataSource.bind('change', function (e) {
@@ -115,17 +119,20 @@ let initKendoComponent = (component, DOMSelector, opt) => {
                 e.sender.group().map(c => obj.hideColumn(c.field))
             })
             break;
+        case 'kendoTreeList':
+            obj = DOMSelector.kendoTreeList(opt).data(component)
+            break;
         case 'kendoDropDownList':
-            obj = DOMSelector.kendoDropDownList(!opt ? {} : opt).data(component)
+            obj = DOMSelector.kendoDropDownList(opt).data(component)
             break;
         case 'kendoComboBox':
-            obj = DOMSelector.kendoComboBox(!opt ? {} : opt).data(component)
+            obj = DOMSelector.kendoComboBox(opt).data(component)
             break;
         case 'kendoWindow':
-            obj = DOMSelector.kendoWindow(!opt ? {} : opt).data(component)
+            obj = DOMSelector.kendoWindow(opt).data(component)
             break;
         case 'kendoTabStrip':
-            obj = DOMSelector.kendoTabStrip(!opt ? {} : opt).data(component)
+            obj = DOMSelector.kendoTabStrip(opt).data(component)
             break;
     }
     return obj
@@ -134,7 +141,7 @@ let initKendoComponent = (component, DOMSelector, opt) => {
 class JKendoBase {
     /**
      * 
-     * @param {'kendoGrid'|'kendoComboBox'|'kendoDropDownList'|'kendoWindow'|'button'|'textbox'|'kendoTabStrip'} component 
+     * @param {'kendoGrid'|'kendoTreeList'|'kendoComboBox'|'kendoDropDownList'|'kendoWindow'|'button'|'textbox'|'kendoTabStrip'} component 
      */
     constructor(component) {
         this.component = component
@@ -154,6 +161,12 @@ class JKendoBase {
         return this.obj[0].outerHTML
     }
     /**
+     * @returns {String}
+     */
+    get html() {
+        return this.obj[0].outerHTML
+    }
+    /**
      * @param {String} value
      */
     set val(value) {
@@ -166,8 +179,10 @@ class JKendoBase {
                 this.obj.value(value)
                 break;
         }
-        this.obj.value(value)
     }
+    /**
+     * @returns String
+     */
     get val() {
         let val = ''
         switch (this.component) {
@@ -189,6 +204,7 @@ class JKendoBase {
             case 'kendoComboBox':
             case 'kendoDropDownList':
             case 'kendoGrid':
+            case 'kendoTreeList':
                 this.opt.dataSource.transport.read = url
                 break;
         }
@@ -201,6 +217,7 @@ class JKendoBase {
             case 'kendoComboBox':
             case 'kendoDropDownList':
             case 'kendoGrid':
+            case 'kendoTreeList':
                 delete this.opt.dataSource.transport
                 this.opt.dataSource.data = data
                 break;
@@ -210,6 +227,7 @@ class JKendoBase {
         let data = []
         switch (this.component) {
             case 'kendoGrid':
+            case 'kendoTreeList':
                 data = this.obj.dataSource.data()
                 break;
         }
@@ -217,7 +235,41 @@ class JKendoBase {
     }
 }
 
-class JKendoGrid extends JKendoBase {
+class JKendoGridKind extends JKendoBase {
+    /**
+     * 
+     * @param {'kendoGrid'|'kendoTreeList'} component 
+     */
+    constructor(component) {
+        super(component)
+    }
+    /**
+     * @param {[('cancel'|'create'|'save'|'excel'|'pdf')]} btns
+     */
+    set toolbar(btns) {
+        if (!btns.length)
+            delete this.opt.toolbar
+        else
+            this.opt.toolbar = btns
+        if (btns.includes('save'))
+            console.log('Please Set saveChanges property')
+    }
+    /**
+     * @param {Boolean} editable
+     */
+    set editable(editable = true) {
+        this.opt.editable = editable
+    }
+    /**
+     * @param {Function} callback
+     */
+    set saveChanges(callback) {
+        if (this.opt.toolbar.includes('save'))
+            this.opt.saveChanges = callback
+    }
+}
+
+class JKendoGrid extends JKendoGridKind {
     constructor() {
         super('kendoGrid')
     }
@@ -261,35 +313,18 @@ class JKendoGrid extends JKendoBase {
             }
         }
     }
-    /**
-     * @param {[('cancel'|'create'|'save'|'excel'|'pdf')]} btns
-     */
-    set toolbar(btns) {
-        if (!btns.length)
-            delete this.opt.toolbar
-        else
-            this.opt.toolbar = btns
-        if (btns.includes('save'))
-            console.log('Please Set saveChanges property')
-    }
+
     /**
      * @param {Boolean} show
      */
     set showGroupHeader(show = true) {
         this.opt.groupable = show
     }
-    /**
-     * @param {Boolean} editable
-     */
-    set editable(editable = true) {
-        this.opt.editable = editable
-    }
-    /**
-     * 
-     */
-    set saveChanges(callback) {
-        if (this.opt.toolbar.includes('save'))
-            this.opt.saveChanges = callback
+}
+
+class JKendoTreeList extends JKendoGridKind {
+    constructor() {
+        super('kendoTreeList')
     }
 }
 
@@ -365,11 +400,5 @@ class JKendoTab extends JKendoBase {
             this.DOM.find('div#' + this.DOM.find('ul li#' + this.id + idx).attr('aria-controls')).html(this.tabContents[idx])
         })
         this.obj.activateTab(this.DOM.find('ul li#' + this.id + 0))
-    }
-}
-
-class JKendoTreeList extends JKendoBase {
-    constructor() {
-        super('kendoTreeList')
     }
 }
