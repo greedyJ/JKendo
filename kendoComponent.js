@@ -245,10 +245,14 @@ class JKendoBase {
 
     on(event, callback) {
         if (callback != null)
-            this.obj.on(event, callback)
+            this.DOM.on(event, callback)
+    }
+    on(event, selector, callback) {
+        if (callback != null)
+            this.DOM.on(event, selector, callback)
     }
     attr(attrObj) {
-        this.obj.attr(attrObj)
+        this.DOM.attr(attrObj)
     }
 }
 
