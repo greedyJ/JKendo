@@ -233,6 +233,9 @@ class JKendoBase {
         }
         return data
     }
+    set progress(show) {
+        kendo.ui.progress(this.DOM, show)
+    }
 }
 
 class JKendoGridKind extends JKendoBase {
@@ -332,6 +335,19 @@ class JKendoTreeList extends JKendoGridKind {
 class JKendoWindow extends JKendoBase {
     constructor() {
         super('kendoWindow')
+    }
+
+    /**
+     * @param {String} width
+     */
+    set width(width) {
+        this.opt.width = width
+    }
+    /**
+     * @param {String} height
+     */
+    set height(height) {
+        this.opt.height = height
     }
 }
 

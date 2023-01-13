@@ -17,4 +17,6 @@ let defaultTreeListConfig = {
     filterable: true,
     toolbar: [],
     selectable: true,
+    resizable: true,
+    reorderable: true,
 }
