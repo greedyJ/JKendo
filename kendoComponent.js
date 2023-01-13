@@ -161,7 +161,7 @@ class JKendoBase {
      * @param {any} obj 
      */
     set html(obj) {
-        if (html.constructor.name.startsWith('JKendo'))
+        if (obj.constructor.name.startsWith('JKendo'))
             this.DOM.html(obj.DOM)
         else
             this.DOM.html(obj)
