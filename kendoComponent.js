@@ -157,8 +157,8 @@ class JKendoBase {
         this.opt = customizeOpt = customizeOpt == null ? this.opt : customizeOpt
         this.obj = initKendoComponent(this.component, this.DOM, this.opt)
     }
-    getHTML() {
-        return this.obj[0].outerHTML
+    set html(html) {
+        this.DOM.html(html)
     }
     /**
      * @returns {String}
@@ -370,8 +370,10 @@ class JKendoDropDownList extends JKendoBase {
 }
 
 class JKendoButton extends JKendoBase {
-    constructor() {
+    constructor(buttonText) {
         super('button')
+
+        this.html = buttonText
     }
 }
 
