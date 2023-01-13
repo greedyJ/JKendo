@@ -158,10 +158,13 @@ class JKendoBase {
         this.obj = initKendoComponent(this.component, this.DOM, this.opt)
     }
     /**
-     * @param {any} html 
+     * @param {any} obj 
      */
-    set html(html) {
-        this.DOM.html(html)
+    set html(obj) {
+        if (html.constructor.name.startsWith('JKendo'))
+            this.DOM.html(obj.DOM)
+        else
+            this.DOM.html(obj)
     }
     /**
      * @returns {String}
