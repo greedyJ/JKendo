@@ -367,6 +367,12 @@ class JKendoWindow extends JKendoBase {
     set height(height) {
         this.opt.height = height
     }
+    /**
+     * @param {String} title
+     */
+    set title(title) {
+        this.opt.title = title
+    }
 }
 
 class JKendoTextbox extends JKendoBase {
