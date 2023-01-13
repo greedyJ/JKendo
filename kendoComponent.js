@@ -247,6 +247,9 @@ class JKendoBase {
         if (callback != null)
             this.obj.on(event, callback)
     }
+    attr(attrObj) {
+        this.obj.attr(attrObj)
+    }
 }
 
 class JKendoGridKind extends JKendoBase {
