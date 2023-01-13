@@ -16,11 +16,5 @@ let defaultTreeListConfig = {
     columns: [],
     filterable: true,
     toolbar: [],
-    dataBound: function () {
-        this.autoFitColumn(0);
-    },
-    change: function () {
-        this.editRow(this.select());
-    },
     selectable: true,
 }
