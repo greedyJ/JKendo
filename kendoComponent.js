@@ -157,6 +157,9 @@ class JKendoBase {
         this.opt = customizeOpt = customizeOpt == null ? this.opt : customizeOpt
         this.obj = initKendoComponent(this.component, this.DOM, this.opt)
     }
+    /**
+     * @param {any} html 
+     */
     set html(html) {
         this.DOM.html(html)
     }
@@ -233,8 +236,16 @@ class JKendoBase {
         }
         return data
     }
+    /**
+     * @param {any} show
+     */
     set progress(show) {
         kendo.ui.progress(this.DOM, show)
+    }
+
+    on(event, callback) {
+        if (callback != null)
+            this.obj.on(event, callback)
     }
 }
 
@@ -321,7 +332,7 @@ class JKendoGrid extends JKendoGridKind {
     /**
      * @param {Boolean} show
      */
-    set showGroupHeader(show = true) {
+    set showGroupHeader(show) {
         this.opt.groupable = show
     }
 }
