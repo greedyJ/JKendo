@@ -155,12 +155,13 @@ class JKendoBase {
         this.id = parseInt(Math.random() * Math.pow(10, 10)).toString()
 
         let objProps = Object.getOwnPropertyNames(Object.getPrototypeOf(this))
-        Object.keys(props).forEach(prop => {
-            if (objProps.includes(prop))
-                try {
-                    this[prop] = props[prop]
-                } catch { }
-        })
+        if (props != null)
+            Object.keys(props).forEach(prop => {
+                if (objProps.includes(prop))
+                    try {
+                        this[prop] = props[prop]
+                    } catch { }
+            })
     }
     /**
      * @param {JSON} customizeOpt
