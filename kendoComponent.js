@@ -5,9 +5,9 @@
 /// <reference path="configs/treeList/defaultTreeListConfig.js" />
 
 /**
- * 
- * @param {'kendoGrid'|'kendoTreeList'|'kendoDropDownList'|'kendoComboBox'|'kendoWindow'|'kendoTabStrip'} component 
- * @returns 
+ *
+ * @param {'kendoGrid'|'kendoTreeList'|'kendoDropDownList'|'kendoComboBox'|'kendoWindow'|'kendoTabStrip'} component
+ * @returns
  */
 let newKendoOpt = (component, extendsOpt) => {
     extendsOpt = !extendsOpt ? {} : extendsOpt
@@ -70,8 +70,8 @@ let newKendoOpt = (component, extendsOpt) => {
     return opt
 }
 /**
- * 
- * @param {'kendoComboBox'|'kendoDropDownList'|'button'|'textbox'|'input'} component 
+ *
+ * @param {'kendoComboBox'|'kendoDropDownList'|'button'|'textbox'|'input'} component
  * @returns default \<div\>
  */
 let newComponentDOM = (component) => {
@@ -88,16 +88,19 @@ let newComponentDOM = (component) => {
         case 'button':
             comp = $('<button>').addClass('k-button').attr('type', 'button')
             break;
+        case 'link':
+            comp = $('<a>')
+            break;
     }
     return comp
 }
 
 /**
- * 
- * @param {'kendoGrid'|'kendoTreeList'|'kendoDropDownList'|'kendoComboBox'|'kendoWindow'|'kendoTabStrip'} component 
+ *
+ * @param {'kendoGrid'|'kendoTreeList'|'kendoDropDownList'|'kendoComboBox'|'kendoWindow'|'kendoTabStrip'} component
  * @param {jQuery} DOMSelector
  * @param {JSON} opt
- * @returns 
+ * @returns
  */
 let initKendoComponent = (component, DOMSelector, opt) => {
     let obj = null
@@ -140,8 +143,8 @@ let initKendoComponent = (component, DOMSelector, opt) => {
 
 class JKendoBase {
     /**
-     * 
-     * @param {'kendoGrid'|'kendoTreeList'|'kendoComboBox'|'kendoDropDownList'|'kendoWindow'|'button'|'textbox'|'kendoTabStrip'} component 
+     *
+     * @param {'kendoGrid'|'kendoTreeList'|'kendoComboBox'|'kendoDropDownList'|'kendoWindow'|'button'|'textbox'|'kendoTabStrip'|'link'} component
      * @param {{}} props set properties on init
      */
     constructor(component, props) {
@@ -167,7 +170,7 @@ class JKendoBase {
         this.obj = initKendoComponent(this.component, this.DOM, this.opt)
     }
     /**
-     * @param {any} obj 
+     * @param {any} obj
      */
     set html(obj) {
         if (obj.constructor.name.startsWith('JKendo'))
@@ -273,8 +276,8 @@ class JKendoBase {
 
 class JKendoGridKind extends JKendoBase {
     /**
-     * 
-     * @param {'kendoGrid'|'kendoTreeList'} component 
+     *
+     * @param {'kendoGrid'|'kendoTreeList'} component
      * @param {{}} props set properties on init
      */
     constructor(component, props) {
@@ -314,7 +317,7 @@ class JKendoGridKind extends JKendoBase {
 
 class JKendoGrid extends JKendoGridKind {
     /**
-     * 
+     *
      * @param {{}} props set properties on init
      */
     constructor(props) {
@@ -366,7 +369,7 @@ class JKendoGrid extends JKendoGridKind {
 
 class JKendoTreeList extends JKendoGridKind {
     /**
-     * 
+     *
      * @param {{}} props set properties on init
      */
     constructor(props) {
@@ -376,7 +379,7 @@ class JKendoTreeList extends JKendoGridKind {
 
 class JKendoWindow extends JKendoBase {
     /**
-     * 
+     *
      * @param {{}} props set properties on init
      */
     constructor(props) {
@@ -405,7 +408,7 @@ class JKendoWindow extends JKendoBase {
 
 class JKendoTextbox extends JKendoBase {
     /**
-     * 
+     *
      * @param {{}} props set properties on init
      */
     constructor(props) {
@@ -415,7 +418,7 @@ class JKendoTextbox extends JKendoBase {
 
 class JKendoComboBox extends JKendoBase {
     /**
-     * 
+     *
      * @param {{}} props set properties on init
      */
     constructor(props) {
@@ -425,7 +428,7 @@ class JKendoComboBox extends JKendoBase {
 
 class JKendoDropDownList extends JKendoBase {
     /**
-     * 
+     *
      * @param {{}} props set properties on init
      */
     constructor(props) {
@@ -435,7 +438,7 @@ class JKendoDropDownList extends JKendoBase {
 
 class JKendoButton extends JKendoBase {
     /**
-     * 
+     *
      * @param {{}} props set properties on init
      */
     constructor(buttonText, props) {
@@ -445,25 +448,37 @@ class JKendoButton extends JKendoBase {
     }
 }
 
+class JKendoLink extends JKendoBase {
+    /**
+     *
+     * @param {{}} props set properties on init
+     */
+    constructor(text, props) {
+        super('link', props)
+
+        this.html = text
+    }
+}
+
 class JKendoTab extends JKendoBase {
     /**
-     * 
+     *
      * @param {{}} props set properties on init
      */
     constructor(props) {
         super('kendoTabStrip', props)
     }
     /**
-     * 
-     * @param {[[String], [Object]]} tabContents 
+     *
+     * @param {[[String], [Object]]} tabContents
      */
     set(tabContents) {
         this.setTabs(tabContents[0])
         this.setContents(tabContents[1])
     }
     /**
-     * 
-     * @param {[String]} tabs 
+     *
+     * @param {[String]} tabs
      */
     setTabs(tabs) {
         this.DOM.html(
