@@ -71,7 +71,7 @@ let newKendoOpt = (component, extendsOpt) => {
 }
 /**
  *
- * @param {'kendoComboBox'|'kendoDropDownList'|'button'|'textbox'|'input'} component
+ * @param {'kendoComboBox'|'kendoDropDownList'|'button'|'textbox'|'input'|'label'} component
  * @returns default \<div\>
  */
 let newComponentDOM = (component) => {
@@ -91,6 +91,9 @@ let newComponentDOM = (component) => {
         case 'link':
             comp = $('<a>')
             break;
+        case 'label':
+            comp = $('<label>')
+            break;
     }
     return comp
 }
@@ -103,7 +106,7 @@ let newComponentDOM = (component) => {
  * @returns
  */
 let initKendoComponent = (component, DOMSelector, opt) => {
-    let obj = null
+    let obj = DOMSelector
     opt = !opt ? {} : opt
     switch (component) {
         case 'kendoGrid':
@@ -169,6 +172,7 @@ class JKendoBase {
     init(customizeOpt) {
         this.opt = customizeOpt = customizeOpt == null ? this.opt : customizeOpt
         this.obj = initKendoComponent(this.component, this.DOM, this.opt)
+        return this.obj
     }
     /**
      * @param {any} obj
@@ -180,11 +184,22 @@ class JKendoBase {
             this.DOM.html(obj)
     }
     /**
+     * @param {any} obj
+     */
+    set append(obj) {
+        if (obj.constructor.name.startsWith('JKendo'))
+            this.DOM.append(obj.DOM)
+        else
+            this.DOM.append(obj)
+    }
+    /**
      * @returns {String}
      */
     get html() {
         return this.obj[0].outerHTML
     }
+    set objName(name) { this._objName = name }
+    get objName() { return this._objName }
     /**
      * @param {String} value
      */
@@ -415,6 +430,13 @@ class JKendoTextbox extends JKendoBase {
     constructor(props) {
         super('textbox', props)
     }
+
+    /**
+     * @param {boolean} enable
+     */
+    set enable(enable) {
+        this.DOM.prop('disabled', !enable)
+    }
 }
 
 class JKendoComboBox extends JKendoBase {
@@ -437,27 +459,57 @@ class JKendoDropDownList extends JKendoBase {
     }
 }
 
-class JKendoButton extends JKendoBase {
+
+class JKendoHTMLObj extends JKendoBase {
     /**
-     *
+     * 
+     * @param {string} componentType 
+     * @param {string} text 
      * @param {{}} props set properties on init
      */
-    constructor(buttonText, props) {
-        super('button', props)
+    constructor(componentType, text, props) {
+        super(componentType, props)
 
-        this.html = buttonText
+        super.html = text
+
+        if (props != null)
+            Object.keys(props).forEach(prop => {
+                if (prop.startsWith('data-') || ['name', 'id'].includes(prop))
+                    this.obj.attr(prop, props[prop])
+            })
     }
 }
 
-class JKendoLink extends JKendoBase {
+class JKendoLabel extends JKendoHTMLObj {
     /**
      *
+     * @param {string} text
      * @param {{}} props set properties on init
      */
     constructor(text, props) {
-        super('link', props)
+        super('label', text, props)
+    }
+}
 
-        this.html = text
+class JKendoButton extends JKendoHTMLObj {
+    /**
+     *
+     * @param {string} buttonText
+     * @param {{}} props set properties on init
+     */
+    constructor(buttonText, props) {
+        super('button', buttonText, props)
+    }
+}
+
+class JKendoLink extends JKendoHTMLObj {
+    /**
+     *
+     * @param {string} text
+     * @param {{}} props set properties on init
+     */
+    constructor(text, props) {
+        super('link', text, props)
     }
 }
 
