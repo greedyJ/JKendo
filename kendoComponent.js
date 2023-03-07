@@ -71,7 +71,7 @@ let newKendoOpt = (component, extendsOpt) => {
 }
 /**
  *
- * @param {'kendoComboBox'|'kendoDropDownList'|'button'|'textbox'|'input'|'label'} component
+ * @param {'kendoComboBox'|'kendoDropDownList'|'button'|'textbox'|'input'|'label'|'textarea'} component
  * @returns default \<div\>
  */
 let newComponentDOM = (component) => {
@@ -93,6 +93,9 @@ let newComponentDOM = (component) => {
             break;
         case 'label':
             comp = $('<label>')
+            break;
+        case 'textarea':
+            comp = $('<textarea>')
             break;
     }
     return comp
@@ -212,6 +215,9 @@ class JKendoBase {
             case 'kendoDropDownList':
                 this.obj.value(value)
                 break;
+            case 'textarea':
+                this.obj.html(value)
+                break;
         }
     }
     /**
@@ -226,6 +232,9 @@ class JKendoBase {
             case 'kendoComboBox':
             case 'kendoDropDownList':
                 val = this.obj.value()
+                break;
+            case 'textarea':
+                val = this.obj.html()
                 break;
         }
         return val
@@ -429,6 +438,23 @@ class JKendoTextbox extends JKendoBase {
      */
     constructor(props) {
         super('textbox', props)
+    }
+
+    /**
+     * @param {boolean} enable
+     */
+    set enable(enable) {
+        this.DOM.prop('disabled', !enable)
+    }
+}
+
+class JKendoTextArea extends JKendoBase {
+    /**
+     *
+     * @param {{}} props set properties on init
+     */
+    constructor(props) {
+        super('textarea', props)
     }
 
     /**
