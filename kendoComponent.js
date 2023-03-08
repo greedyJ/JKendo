@@ -328,6 +328,7 @@ class JKendoGridKind extends JKendoBase {
      */
     set editable(editable = true) {
         this.opt.editable = editable
+        delete this.opt.change
     }
     /**
      * @param {Function} callback
