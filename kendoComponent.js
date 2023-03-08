@@ -227,14 +227,12 @@ class JKendoBase {
         let val = ''
         switch (this.component) {
             case 'textbox':
+            case 'textarea':
                 val = this.obj.val()
                 break;
             case 'kendoComboBox':
             case 'kendoDropDownList':
                 val = this.obj.value()
-                break;
-            case 'textarea':
-                val = this.obj.html()
                 break;
         }
         return val

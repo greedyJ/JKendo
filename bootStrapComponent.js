@@ -58,6 +58,7 @@ class BSGrid {
         tempCol.html(content)
         if (className)
             tempCol.addClass(className)
+        return tempCol
     }
     /**
      * 
