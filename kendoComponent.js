@@ -6,7 +6,7 @@
 
 /**
  *
- * @param {'kendoGrid'|'kendoTreeList'|'kendoDropDownList'|'kendoComboBox'|'kendoWindow'|'kendoTabStrip'} component
+ * @param {'kendoGrid'|'kendoTreeList'|'kendoDropDownList'|'kendoComboBox'|'kendoWindow'|'kendoTabStrip'|'kendoRadioButton'} component
  * @returns
  */
 let newKendoOpt = (component, extendsOpt) => {
@@ -65,37 +65,50 @@ let newKendoOpt = (component, extendsOpt) => {
                 }
             }
             break;
+        case 'kendoRadioButton':
+            opt = {
+                label: "RadioButton Label",
+                encoded: false
+            }
+            break;
     }
     Object.assign(opt, extendsOpt)
-    return opt
+    return { ...opt }
 }
 /**
  *
- * @param {'kendoComboBox'|'kendoDropDownList'|'button'|'textbox'|'input'|'label'|'textarea'} component
+ * @param {'kendoComboBox'|'kendoDropDownList'|'button'|'textbox'|'input'|'label'|'textarea'|'kendoRadioButton'} component
  * @returns default \<div\>
  */
 let newComponentDOM = (component) => {
-    let comp = $('<div>')
+    let comp = $(document.createElement('div'))
     switch (component) {
         case 'input':
         case 'kendoDropDownList':
         case 'kendoComboBox':
-            comp = $('<input>').attr('type', 'text')
-            break;
+        case 'kendoRadioButton':
         case 'textbox':
-            comp = newComponentDOM('input').addClass('k-textbox')
+            comp = $(document.createElement('input')).attr('type', 'text')
+            switch (component) {
+                case 'kendoRadioButton':
+                    comp.attr({ type: 'radio' })
+                    break;
+                case 'textbox':
+                    comp.addClass('k-textbox')
+                    break;
+            }
             break;
         case 'button':
-            comp = $('<button>').addClass('k-button').attr('type', 'button')
+            comp = $(document.createElement('button')).addClass('k-button').attr('type', 'button')
             break;
         case 'link':
-            comp = $('<a>')
+            comp = $(document.createElement('a'))
             break;
         case 'label':
-            comp = $('<label>')
+            comp = $(document.createElement('label'))
             break;
         case 'textarea':
-            comp = $('<textarea>')
+            comp = $(document.createElement('textarea'))
             break;
     }
     return comp
@@ -103,7 +116,7 @@ let newComponentDOM = (component) => {
 
 /**
  *
- * @param {'kendoGrid'|'kendoTreeList'|'kendoDropDownList'|'kendoComboBox'|'kendoWindow'|'kendoTabStrip'} component
+ * @param {'kendoGrid'|'kendoTreeList'|'kendoDropDownList'|'kendoComboBox'|'kendoWindow'|'kendoTabStrip'|'kendoRadioButton'} component
  * @param {jQuery} DOMSelector
  * @param {JSON} opt
  * @returns
@@ -143,6 +156,9 @@ let initKendoComponent = (component, DOMSelector, opt) => {
         case 'kendoTabStrip':
             obj = DOMSelector.kendoTabStrip(opt).data(component)
             break;
+        // case 'kendoRadioButton':
+        //     obj = DOMSelector.kendoRadioButton(opt).data(component)
+        //     break;
     }
     return obj
 }
@@ -150,7 +166,7 @@ let initKendoComponent = (component, DOMSelector, opt) => {
 class JKendoBase {
     /**
      *
-     * @param {'kendoGrid'|'kendoTreeList'|'kendoComboBox'|'kendoDropDownList'|'kendoWindow'|'button'|'textbox'|'kendoTabStrip'|'link'} component
+     * @param {'kendoGrid'|'kendoTreeList'|'kendoComboBox'|'kendoDropDownList'|'kendoWindow'|'button'|'textbox'|'kendoTabStrip'|'link'|'kendoRadioButton'} component
      * @param {{}} props set properties on init
      */
     constructor(component, props) {
@@ -218,6 +234,11 @@ class JKendoBase {
             case 'textarea':
                 this.obj.html(value)
                 break;
+            case 'kendoRadioButton':
+                // this.obj.check(this.DOM.val() == value)
+                if (this.DOM.val() == value)
+                    this.DOM.click()
+                break;
         }
     }
     /**
@@ -233,6 +254,11 @@ class JKendoBase {
             case 'kendoComboBox':
             case 'kendoDropDownList':
                 val = this.obj.value()
+                break;
+            case 'kendoRadioButton':
+                // this.obj.check(this.DOM.val() == value)
+                if (this.DOM.prop('checked'))
+                    val = this.DOM.val()
                 break;
         }
         return val
@@ -484,6 +510,32 @@ class JKendoDropDownList extends JKendoBase {
     }
 }
 
+class JKendoRadioButton extends JKendoBase {
+    /**
+     *
+     * @param {{}} props set properties on init
+     */
+    constructor(name, label, value, props) {
+        super('kendoRadioButton', props)
+        this.DOM.attr({
+            'value': value,
+            'name': name
+        })
+        this._label = label
+    }
+
+    /**
+     * @param {string} label
+     */
+    set label(label) {
+        this.opt['label'] = label
+    }
+
+    get DisplayDOM() {
+        return $(document.createElement('label')).html(this.DOM).append(' ' + this._label)
+    }
+}
+
 
 class JKendoHTMLObj extends JKendoBase {
     /**
@@ -583,5 +635,42 @@ class JKendoTab extends JKendoBase {
             this.DOM.find('div#' + this.DOM.find('ul li#' + this.id + idx).attr('aria-controls')).html(this.tabContents[idx])
         })
         this.obj.activateTab(this.DOM.find('ul li#' + this.id + 0))
+    }
+}
+
+class JKendoRadioButtonGroup extends JKendoBase {
+    /**
+     * 
+     * @param {string} name 
+     * @param {[]} labels 
+     * @param {[]} values 
+     * @param {object} props 
+     */
+    constructor(name, labels, values, props) {
+        super('div')
+        this._rbs = []
+        if (labels.length == values.length) {
+            labels.map((label, idx) => {
+                let _rb = new JKendoRadioButton(name, label, values[idx], props)
+                this._rbs.push(_rb)
+                this.DOM.append(_rb.DisplayDOM)
+                this.DOM.append(' ')
+            })
+        }
+    }
+
+    init() {
+        this._rbs.forEach(_rb => _rb.init())
+    }
+
+    /**
+     * @param {any} value
+     */
+    set val(value) {
+        this._rbs.forEach(_rb => _rb.val = value)
+    }
+    get val() {
+        this._rbs.filter(_rb => console.log(_rb.obj.prop('checked')))
+        return this._rbs.filter(_rb => _rb.obj.prop('checked'))[0].val
     }
 }
