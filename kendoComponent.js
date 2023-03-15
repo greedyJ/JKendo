@@ -454,6 +454,33 @@ class JKendoWindow extends JKendoBase {
     set title(title) {
         this.opt.title = title
     }
+
+    // init() {
+    //     if (this.opt['modal']) {
+    //         function resizeDialog(DOM) {
+    //             var h = DOM.height();
+    //             var headH = $("#dialog .modal-header").outerHeight(true);
+    //             var footH = $("#dialog .modal-footer").outerHeight(true);
+    //             var contH = h - headH - footH;
+
+    //             $("#dialog .container").height(contH).css("overflow", "auto");
+    //         }
+
+    //         let header = $(document.createElement('div')).addClass('.modal-header')
+    //         let container = $(this.html).addClass('.container')
+    //         let footer = $(document.createElement('div')).addClass('.modal-footer')
+    //         this.DOM
+    //             .html(header)
+    //             .append(container)
+    //             .append(footer)
+    //         this.opt['open'] =
+    //             this.opt['resize'] =
+    //             () => {
+    //                 resizeDialog(this.DOM)
+    //             }
+    //     }
+    //     return super.init()
+    // }
 }
 
 class JKendoTextbox extends JKendoBase {
@@ -657,10 +684,13 @@ class JKendoRadioButtonGroup extends JKendoBase {
                 this.DOM.append(' ')
             })
         }
+        this.objName = name
+        return this
     }
 
     init() {
         this._rbs.forEach(_rb => _rb.init())
+        return this
     }
 
     /**
