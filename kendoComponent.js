@@ -455,32 +455,50 @@ class JKendoWindow extends JKendoBase {
         this.opt.title = title
     }
 
-    // init() {
-    //     if (this.opt['modal']) {
-    //         function resizeDialog(DOM) {
-    //             var h = DOM.height();
-    //             var headH = $("#dialog .modal-header").outerHeight(true);
-    //             var footH = $("#dialog .modal-footer").outerHeight(true);
-    //             var contH = h - headH - footH;
+    addHeaderFooter() {
+        if (this.opt['modal']) {
+            function resizeDialog(DOM) {
+                var h = $(document).height() - 100
+                var headH = 50//DOM.find(".modal-header").outerHeight(true);
+                var footH = 50//DOM.find(".modal-footer").outerHeight(true);
+                var contH = h - headH - footH;
+                console.log(headH, footH, contH)
 
-    //             $("#dialog .container").height(contH).css("overflow", "auto");
-    //         }
+                DOM.css('height', contH).css("overflow", "scroll");
+            }
 
-    //         let header = $(document.createElement('div')).addClass('.modal-header')
-    //         let container = $(this.html).addClass('.container')
-    //         let footer = $(document.createElement('div')).addClass('.modal-footer')
-    //         this.DOM
-    //             .html(header)
-    //             .append(container)
-    //             .append(footer)
-    //         this.opt['open'] =
-    //             this.opt['resize'] =
-    //             () => {
-    //                 resizeDialog(this.DOM)
-    //             }
-    //     }
-    //     return super.init()
-    // }
+            this.header = $(document.createElement('div')).addClass('.modal-header')
+            this.container = $(document.createElement('div')).addClass('.container')
+            this.footer = $(document.createElement('div')).addClass('.modal-footer')
+            this.DOM
+                .html(this.header)
+                .append(this.container)
+                .append(this.footer)
+            this.opt['open'] =
+                this.opt['resize'] =
+                () => {
+                    resizeDialog(this.container)
+                }
+        }
+    }
+
+    /**
+     * @param {string} content
+     */
+    set setContent(content) {
+        if (this.container)
+            this.container.html(content)
+        else
+            this.html = content
+    }
+
+    /**
+     * @param {any} footerContent
+     */
+    set setFooter(footerContent) {
+        if (this.footer)
+            this.footer.html(footerContent)
+    }
 }
 
 class JKendoTextbox extends JKendoBase {
